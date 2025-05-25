@@ -568,7 +568,6 @@ options=(
     "Install a ChromeOS recovery image"
     "Payloads"
     "Connect to wifi"
-    "Install additional packages"
     "Credits"
     "KVS"
     "Exit and Reboot"
@@ -579,9 +578,8 @@ actions=(
     installcros
     payloads
     wifi
-    packages
     credits
-    "packages && kvs"
+    "kvs"
     "reboot -f"
 )
 
