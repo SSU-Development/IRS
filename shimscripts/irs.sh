@@ -1,5 +1,57 @@
 #!/bin/bash
 
+menu() {
+    local prompt="$1"
+    shift
+    local options=("$@")
+    local selected=0
+    local count=${#options[@]}
+
+    tput civis
+    echo "$prompt"
+    for i in "${!options[@]}"; do
+        if [[ $i -eq $selected ]]; then
+            tput smul
+            echo " > ${options[i]}"
+            tput rmul
+        else
+            echo "   ${options[i]}"
+        fi
+    done
+
+    while true; do
+        tput cuu $count
+
+        for i in "${!options[@]}"; do
+            if [[ $i -eq $selected ]]; then
+                tput smul
+                echo " > ${options[i]}"
+                tput rmul
+            else
+                echo "   ${options[i]}"
+            fi
+        done
+
+        IFS= read -rsn1 key
+        if [[ $key == $'\x1b' ]]; then
+            read -rsn2 key
+        fi
+
+        case $key in
+            '[A') ((selected--)) ;;
+            '[B') ((selected++)) ;;
+            '') break ;;
+        esac
+
+        ((selected < 0)) && selected=$((count - 1))
+        ((selected >= count)) && selected=0
+    done
+
+    tput cnorm
+
+    return $selected
+}
+
 credits() {
 	echo -e "${COLOR_MAGENTA_B}Credits"
 	echo -e "${COLOR_PINK_B}Sophia${COLOR_RESET}: The lead developer of IRS, Figured out wifi"
@@ -156,7 +208,27 @@ pv_dircopy() {
 	tar -C /mnt/shimroot -cf - . | tar -C /newroot -xf -
 }
 
+downloadshim() {
+	echo "Not all shims will work. KVS does not, but it is already implemented into IRS."
+	
+}
+
 shimboot() { #credits to xmb9
+	options_install=(
+	    "Download a shim off the interwebs to the flash drive and install"
+	    "Use a shim already in the shims directory"
+	    "Exit and return to The IRS Menu"
+	)
+
+	menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options_install[@]}"
+	install_choice=$?
+
+	case "$install_choice" in
+	    0) downloadshim ;;
+	    1) ;;
+	    *) reco="exit" ;;
+	esac
+
 	if [[ -z "$(ls -A /irs/shims)" ]]; then
 		echo -e "${COLOR_YELLOW_B}You have no shims downloaded!\nPlease download a few images for your board ${board_name} (${CHROMEOS_RELEASE_BOARD}) into the shims folder on IRS_FILES!"
 		echo -e "If you have a computer running Windows, use Ext4Fsd or this chrome device. If you have a Mac, use this chrome device to download images instead.${COLOR_RESET}\n"
@@ -271,15 +343,19 @@ download() {
 	rm $VERSION.zip
 }
 installcros() { #credits to xmb9 for part of this
-	echo -e "What would you like to do?"
-	echo -e "(1) Download an image off the interwebs to the flash drive and install"
-	echo -e "(2) Use an image already in the images directory"
-	echo -e "(3) Exit and return to The IRS Menu"
-	read -p "> " installoptions
-	case "$installoptions" in
-		1) download ;;
-		2) ;;
-		*) reco="exit" ;;
+	options_install=(
+	    "Download an image off the interwebs to the flash drive and install"
+	    "Use an image already in the images directory"
+	    "Exit and return to The IRS Menu"
+	)
+
+	menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options_install[@]}"
+	install_choice=$?
+
+	case "$install_choice" in
+	    0) download ;;
+	    1) ;;
+	    *) reco="exit" ;;
 	esac
 
 	if [[ -z "$(ls -A /irs/recovery)" ]]; then
@@ -496,21 +572,21 @@ packages() {
 #	mkdir -p /mnt/cros
 #	mount $(fdisk -l | grep $(get_largest_cros_blockdev) | grep -i 'chromeos root fs' | head -n 1 | awk '{print $1}') /mnt/cros
 }
+
+
 options=(
     "Bash shell"
     "Install a ChromeOS recovery image"
-    "Boot an RMA shim"
     "Payloads"
     "Connect to wifi"
     "Install additional packages"
     "Credits"
     "Exit and Reboot"
-)
+) # shims not in because not sure whether to include them or not 
 
 actions=(
     "exec bash"
     installcros
-    shimboot
     payloads
     wifi
     packages
@@ -518,45 +594,11 @@ actions=(
     "reboot -f"
 )
 
-menu() {
-    local selected=0
-    while true; do
-        clear
-        splash 0
-        setterm --cursor=off
-        echo "Select an option (use ↑ ↓ arrows, Enter to select):"
-        echo
-
-        for i in "${!options[@]}"; do
-            if [[ $i -eq $selected ]]; then
-                tput smul
-                echo " > ${options[$i]}"
-                tput rmul
-            else
-                echo "   ${options[$i]}"
-            fi
-        done
-
-        IFS= read -rsn1 key
-        if [[ $key == $'\x1b' ]]; then
-            read -rsn2 key
-        fi
-
-        case $key in
-            '[A') ((selected--)) ;;
-            '[B') ((selected++)) ;;
-            '') break ;;
-        esac
-
-        ((selected < 0)) && selected=$((${#options[@]} - 1))
-        ((selected >= ${#options[@]})) && selected=0
-    done
-
-    eval "${actions[$selected]}"
-}
-
 while true; do
-    menu
-    echo ""
+    clear
+    splash 0
+    menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options[@]}"
+    selected=$?
+    eval "${actions[$selected]}"
+    echo
 done
-
