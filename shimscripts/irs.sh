@@ -564,7 +564,7 @@ EOF
 }
 packages() {
 	archi=$(uname -m)
-	cp -r /irs/main/bins/$archi/* /
+	cp -r /irs/binaries/$archi/* /
 	chmod +x /bin/*
 	chmod +x /sbin/*
 #	mkdir -p /mnt/cros
