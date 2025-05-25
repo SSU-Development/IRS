@@ -1,0 +1,32 @@
+#!/bin/bash -l
+echo "QUARTS: The Questionable Underdeveloped Attempt at Running TUI Systems"
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+setsid -c true
+
+[ -f /etc/profile ] && source /etc/profile
+[ -f /etc/environment ] && source /etc/environment
+
+mount -t devtmpfs -o mode=0755,nosuid devtmpfs /dev
+mount -n -t proc -o nodev,noexec,nosuid proc /proc
+mount -n -t sysfs -o nodev,noexec,nosuid sysfs /sys
+
+mkdir -p /dev/pts
+mount -n -t devpts -o noexec,nosuid devpts /dev/pts || :
+
+mount -n -t debugfs debugfs /sys/kernel/debug
+
+mkdir -p /var/lib
+[ ! -e /var/run ] && ln -s /run /var/run
+
+[ -d /proc/self/fd ] && [ ! -e /dev/fd ] && ln -s /proc/self/fd /dev/fd
+echo "Starting udev..."
+
+/sbin/udevd --daemon
+udevadm trigger
+udevadm settle
+
+[ -f /usr/sbin/sh1mmer_main.sh ] && source /usr/sbin/sh1mmer_main.sh
+echo "Failed to execute the true init. Aborting..."
+echo "This shell has PID 1. Exit = panic."
+exec /bin/sh
+# credits to xmb9 for the knowledge of devtmpfs being guaranteed on cros

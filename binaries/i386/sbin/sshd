@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo -e "ssh/sshd is not compatible with i386 devices in IRS. (yet...)"
