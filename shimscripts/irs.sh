@@ -7,7 +7,7 @@ menu() {
     local selected=0
     local count=${#options[@]}
 
-    tput cnorm
+    tput civis
     echo "$prompt"
     for i in "${!options[@]}"; do
         if [[ $i -eq $selected ]]; then
@@ -46,9 +46,10 @@ menu() {
         ((selected >= count)) && selected=0
     done
 
-    tput civis
+    tput cnorm
     return $selected
 }
+
 
 export -f menu
 
