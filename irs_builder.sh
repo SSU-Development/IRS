@@ -76,9 +76,10 @@ patch_sh1mmer() {
 
     mount "${LOOPDEV}p5" "$MNT_IRS"
     log_info "Creating directories..."
-    mkdir -p "$MNT_IRS"/{shims,shimscripts,recovery,payloads,firmware}
+    mkdir -p "$MNT_IRS"/{shims,shimscripts,recovery,payloads,firmware,binaries}
 
     cp -r "$SCRIPT_DIR/payloads/"* "$MNT_IRS/payloads/"
+    cp -r "$SCRIPT_DIR/binaries/"* "$MNT_IRS/binaries/"
     cp -r "$SCRIPT_DIR/shimscripts/"* "$MNT_IRS/shimscripts/"
     cp -r "$SCRIPT_DIR/linux-firmware/"* "$MNT_IRS/firmware/"
     touch "$MNT_IRS/.IMAGES_NOT_YET_RESIZED"
