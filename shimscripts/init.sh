@@ -126,6 +126,5 @@ chmod +x /bin/sh1mmer_switch_root
 stty echo || :
 clear
 initsplash
-sleep 10
 echo "sleeping for test"
 exec sh1mmer_switch_root || :
