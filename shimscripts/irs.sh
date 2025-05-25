@@ -7,6 +7,7 @@ menu() {
     local selected=0
     local count=${#options[@]}
 
+    tput cnorm
     echo "$prompt"
     for i in "${!options[@]}"; do
         if [[ $i -eq $selected ]]; then
@@ -45,8 +46,11 @@ menu() {
         ((selected >= count)) && selected=0
     done
 
+    tput civis
     return $selected
 }
+
+export -f menu
 
 credits() {
 	echo -e "${COLOR_MAGENTA_B}Credits"
@@ -437,25 +441,22 @@ exitdebug() {
 }
 
 payloads() {
-	echo -e "Choose payload to run:"
-	select FILE in "${selpayload[@]}" "Exit"; do
- 		if [[ -n "$FILE" ]]; then
-			payload=$FILE
-			break
-		elif [[ "$FILE" == "Exit" ]]; then
-			payload=$FILE
-			break
-		fi
-	done
+	options_payload=("${selpayload[@]}" "Exit")
+
+	menu "Choose payload to run:" "${options_payload[@]}"
+	choice=$?
+
+	payload="${options_payload[$choice]}"
+
 	if [[ $payload == "Exit" ]]; then
-		read -p "Press enter to continue."
-		clear
-		splash 0
+	    read -p "Press enter to continue."
+	    clear
+	    splash 0
 	else
-		source $payload
-		read -p "Press enter to continue."
-		clear
-		splash 0
+	    source "$payload"
+	    read -p "Press enter to continue."
+	    clear
+	    splash 0
 	fi
 }
 
@@ -577,6 +578,7 @@ options=(
     "Connect to wifi"
     "Install additional packages"
     "Credits"
+    "KVS"
     "Exit and Reboot"
 ) # shims not in because not sure whether to include them or not 
 
@@ -587,6 +589,7 @@ actions=(
     wifi
     packages
     credits
+    "packages && kvs"
     "reboot -f"
 )
 
