@@ -7,7 +7,6 @@ menu() {
     local selected=0
     local count=${#options[@]}
 
-    tput civis
     echo "$prompt"
     for i in "${!options[@]}"; do
         if [[ $i -eq $selected ]]; then
@@ -21,7 +20,6 @@ menu() {
 
     while true; do
         tput cuu $count
-
         for i in "${!options[@]}"; do
             if [[ $i -eq $selected ]]; then
                 tput smul
@@ -46,8 +44,6 @@ menu() {
         ((selected < 0)) && selected=$((count - 1))
         ((selected >= count)) && selected=0
     done
-
-    tput cnorm
 
     return $selected
 }
