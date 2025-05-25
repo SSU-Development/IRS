@@ -562,15 +562,6 @@ EOF
     fi
 
 }
-packages() {
-	archi=$(uname -m)
-	cp -r /irs/binaries/$archi/* /
-	chmod +x /bin/*
-	chmod +x /sbin/*
-#	mkdir -p /mnt/cros
-#	mount $(fdisk -l | grep $(get_largest_cros_blockdev) | grep -i 'chromeos root fs' | head -n 1 | awk '{print $1}') /mnt/cros
-}
-
 
 options=(
     "Bash shell"

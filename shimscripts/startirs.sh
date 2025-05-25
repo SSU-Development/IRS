@@ -97,5 +97,6 @@ if [ ! -z "$(ls -A /irs/.IMAGES_NOT_YET_RESIZED 2> /dev/null)" ]; then
 	sync
 fi
 chmod 777 /irs/*
+source /irs/shimscripts/packages.sh
 source /irs/shimscripts/irs.sh
 mkdir /mnt/cros && mount /dev/mmcblk
