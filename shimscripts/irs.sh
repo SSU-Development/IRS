@@ -575,7 +575,7 @@ options=(
 ) # shims not in because not sure whether to include them or not 
 
 actions=(
-    "exec bash"
+    "alias exit=return && exec bash"
     installcros
     payloads
     wifi
