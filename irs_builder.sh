@@ -15,8 +15,8 @@ IMAGE="$1"
 SCRIPT_DIR="${0%/*}"
 . "$SCRIPT_DIR/wax_common.sh"
 
-[ -z "$IMAGE" ] && fail "Specify a SH1MMER Legacy image (Feb 2024+): irs_builder.sh board.bin"
-[ "$EUID" -ne 0 ] && fail "Please run as root."
+[ -z "$IMAGE" ] && fail "Specify a SH1MMER Legacy image: irs_builder.sh board.bin"
+[ "$EUID" -ne 0 ] && fail "Run as root."
 command -v git &>/dev/null || fail "Please install git."
 
 cleanup() {
@@ -30,15 +30,6 @@ check_raw_shim() {
     chmod +x "$SCRIPT_DIR/lib/$ARCHITECTURE/cgpt"
     "$SCRIPT_DIR/lib/$ARCHITECTURE/cgpt" find -l SH1MMER "$LOOPDEV" &>/dev/null || fail "Use a SH1MMER Legacy image! Other images cannot evade taxes."
     log_info "SH1MMER Legacy image detected, tax evading..."
-}
-
-check_pre_frecon() {
-    log_info "Checking if shim is pre-frecon..."
-    MNT_ROOTA=$(mktemp -d)
-    mount -o ro,norecovery "${LOOPDEV}p4" "$MNT_ROOTA"
-    [ ! -f "$MNT_ROOTA/sbin/frecon" ] && fail "Pre-frecon shims are not supported."
-    log_info "Shim has frecon present. Tax evading..."
-    umount "$MNT_ROOTA" && rmdir "$MNT_ROOTA"
 }
 
 patch_sh1mmer() {
@@ -106,7 +97,6 @@ losetup -P "$LOOPDEV" "$IMAGE"
 safesync
 
 check_raw_shim
-check_pre_frecon
 safesync
 
 trap 'cleanup; exit' EXIT
