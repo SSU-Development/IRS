@@ -11,7 +11,6 @@ Uses wifi (Yes, it works!!!) or Ethernet.
 # What can it do?
 * ✅ Connect to wifi
 * ✅ Download recovery images
-* ✅ Boot shims
 * ✅ Recover with those recovery images, or images put in the device by another device.
 
 > [!WARNING]
@@ -24,7 +23,7 @@ no.
 - Synaptic: Emotional Support
 - Simon: Brainstormed how to do wifi, helped with dhcpcd
 - kraeb: QoL improvements and initial idea
-- xmb9: The name, the current builder, several key parts of this
+- xmb9: The name, the current builder
 - AC3: Literally nothing
 - Rainestorme: Murkmod's version finder
 
