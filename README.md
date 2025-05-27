@@ -20,13 +20,13 @@ Uses wifi (Yes, it works!!!) or Ethernet.
 no.
 
 # Credits
-Sophia: The lead developer of IRS, Figured out wifi
-Synaptic: Emotional Support
-Simon: Brainstormed how to do wifi, helped with dhcpcd
-kraeb: QoL improvements and initial idea
-xmb9: The name, the current builder, several key parts of this
-AC3: Literally nothing
-Rainestorme: Murkmod's version finder
+- Sophia: The lead developer of IRS, Figured out wifi
+- Synaptic: Emotional Support
+- Simon: Brainstormed how to do wifi, helped with dhcpcd
+- kraeb: QoL improvements and initial idea
+- xmb9: The name, the current builder, several key parts of this
+- AC3: Literally nothing
+- Rainestorme: Murkmod's version finder
 
 ```
                _____   _    __  __                
