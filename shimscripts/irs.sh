@@ -406,7 +406,6 @@ EOF
     		n | N) changedhcpinfo ;;
     		    *) ;;
 	    esac
-    else
         echo "Wifi failed. If you're on grunt, that's why. Otherwise, try rebooting."
         sleep 1
         return
