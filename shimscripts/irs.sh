@@ -392,7 +392,8 @@ EOF
         else
             wpa_supplicant -i "$iface" -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
         fi
-        read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
+        if ip addr | awk '/^[0-9]+: / { iface=$2 } /state UP/ && iface ~ /^w/ { exit 0 } END { exit 1 }'; then
+            	read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
     	case "$autoip" in
     		y | Y) autoipcon ;;
     		n | N) manipcon ;;
@@ -406,6 +407,7 @@ EOF
     		n | N) changedhcpinfo ;;
     		    *) ;;
 	    esac
+    else
         echo "Wifi failed. If you're on grunt, that's why. Otherwise, try rebooting."
         sleep 1
         return
