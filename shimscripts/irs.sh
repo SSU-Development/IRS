@@ -1,5 +1,5 @@
 #!/bin/bash
-
+alias canwifi="curl -Is https://github.com | head -n 1 | grep -q "HTTP/" && $1" || echo "Not connected to wifi."
 menu() {
     local prompt="$1"
     shift
@@ -427,17 +427,19 @@ options=(
     "Connect to wifi"
     "Credits"
     "KVS"
+    "Install additional packages"
     "Update the IRS Shim"
     "Exit and Reboot"
 )
 
 actions=(
-    "alias exit=return && exec bash"
+    bash
     installcros
     payloads
     wifi
     credits
-    "packages && kvs"
+    "canwifi packages"
+    "canwifi packages && kvs"
     "updateshim"
     "reboot -f"
 )
