@@ -320,7 +320,7 @@ firmware() {
 iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
-    DHCP_INFO=$(dhcpcd -d -4 -G -K -T "$iface" 2>/dev/null) # this doesnt work because of new root also haha 420
+    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>/dev/null)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
     firstnum=$(echo "$ip" | cut -d. -f1)
@@ -332,7 +332,7 @@ autoipcon() {
     echo "IP: $ip"
     echo "Gateway: $gateway"
     echo "Subnet Mask: $mask"
-    ifconfig "$iface" "$ip" netmask "$mask" up
+    ifconfig $iface "$ip" netmask "$mask" up
     route add default gw "$gateway"
 	read -p "Confirm? (Y/n)" confirmchanges 
 }
@@ -342,7 +342,7 @@ manipcon() {
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
 
-    DHCP_INFO=$(dhcpcd -d -4 -G -K -T "$iface" 2>/dev/null)
+    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>/dev/null)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
     firstnum=$(echo "$ip" | cut -d. -f1)
@@ -379,9 +379,9 @@ wifi() {
 	firmware
     read -p "Enter your wifi SSID/Name: " ssid
     read -p "Enter your wifi password (leave blank if none): " psk
-    ifconfig "$iface" up
+    ifconfig $iface up
     if [ -z "$psk" ]; then
-        wpa_supplicant -i "$iface" -C /run/wpa_supplicant -B -c <(
+        wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(
             cat <<EOF
 network={
     ssid="$ssid"
@@ -390,7 +390,7 @@ network={
 EOF
             )
         else
-            wpa_supplicant -i "$iface" -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
+            wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
         fi
         if ip addr | awk '/^[0-9]+: / { iface=$2 } /state UP/ && iface ~ /^w/ { exit 0 } END { exit 1 }'; then
             	read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
@@ -401,7 +401,7 @@ EOF
     	esac
     	case "$confirmchanges" in
     		y | Y) 
-    			ifconfig "$iface" "$ip" netmask "$mask" up
+    			ifconfig $iface "$ip" netmask "$mask" up
     		    route add default gw "$gateway"
     		    echo "nameserver 8.8.8.8" > /etc/resolv.conf ;;
     		n | N) changedhcpinfo ;;
@@ -417,7 +417,7 @@ EOF
 updateshim() {
     source /irs/shimscripts/updateshim.sh
 }
-packages() {
+packages() { #haha 420
     source /irs/shimscripts/packages.sh
 }
 options=(
