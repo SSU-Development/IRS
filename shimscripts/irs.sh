@@ -427,6 +427,7 @@ options=(
     "Connect to wifi"
     "Credits"
     "KVS"
+    "Update the IRS Shim"
     "Exit and Reboot"
 )
 
@@ -437,6 +438,7 @@ actions=(
     wifi
     credits
     "packages && kvs"
+    "updateshim"
     "reboot -f"
 )
 
