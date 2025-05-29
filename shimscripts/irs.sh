@@ -317,7 +317,7 @@ firmware() {
 	modprobe iwlwifi
 }
 
-iface=$(ip a | awk '/state UP/ && $9 ~ /^w/ {print $9; exit}')
+iface=$(ip a | grep ": wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T "$iface" 2>/dev/null) # this doesnt work because of new root also haha 420
@@ -392,8 +392,7 @@ EOF
         else
             wpa_supplicant -i "$iface" -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
         fi
-        if ip addr | awk '/^[0-9]+: / { iface=$2 } /state UP/ && iface ~ /^w/ { exit 0 } END { exit 1 }'; then
-            	read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
+        read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
     	case "$autoip" in
     		y | Y) autoipcon ;;
     		n | N) manipcon ;;
