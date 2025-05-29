@@ -1,16 +1,30 @@
+#!/bin/bash
+
 # IRS' backup and update system.
 
 export update="/irs/update"
 export scripts="/irs/shimscripts"
 export backups="/irs/backups"
+export payloads="/irs/payloads"
+export binaries="/irs/binaries"
+
 read -p "Updating will delete the previous backups and overwrite them with the current files. Proceed? (Y/n): " confirmupdate
 case $confirmupdate in
     y|Y) ;;
     *) return ;;
 esac
-mkdir -p $update
-mkdir -p $backups
-curl -LO https://irs.synapticshutup.dev/update.zip -o $update/update.zip
-unzip $update/update.zip && rm -f $update/update.zip # only deletes if unzipping suceeds
-mv $scripts/* $backups/
-cat $update/shimscripts/* > $scripts/
+
+mkdir -p "$update" "$backups"
+
+url="https://github.com/SSU-Development/IRS/archive/refs/heads/main.zip"
+path="$update/update.zip"
+echo "Downloading IRS..."
+curl -L "$url" -o "$path"
+echo "Extracting..."
+unzip -o "$path" -d "$update"
+mv "$scripts"/* "$backups/" 2>/dev/null
+mkdir -p "$scripts"
+cp -r "$update/IRS-main/shimscripts/"* "$scripts/"
+cp -r "$update/IRS-main/payloads/"* "$payloads/"
+cp -r "$update/IRS-main/binaries/"* "$payloads/"
+echo "Update complete."
