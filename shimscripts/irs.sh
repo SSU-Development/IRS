@@ -317,7 +317,7 @@ firmware() {
 	modprobe iwlwifi
 }
 
-iface=$(ip a | grep ": wl" | head -n 1 | awk '{print $2}' | sed 's/://')
+iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T "$iface" 2>/dev/null) # this doesnt work because of new root also haha 420
