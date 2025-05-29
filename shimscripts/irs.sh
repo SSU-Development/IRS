@@ -414,8 +414,12 @@ EOF
     fi
 
 }
-
-
+updateshim() {
+    source /irs/shimscripts/updateshim.sh
+}
+packages() {
+    source /irs/shimscripts/packages.sh
+}
 options=(
     "Bash shell"
     "Install a ChromeOS recovery image"
@@ -424,7 +428,7 @@ options=(
     "Credits"
     "KVS"
     "Exit and Reboot"
-) # shims not in because not sure whether to include them or not 
+)
 
 actions=(
     "alias exit=return && exec bash"
@@ -432,7 +436,7 @@ actions=(
     payloads
     wifi
     credits
-    "kvs"
+    "packages && kvs"
     "reboot -f"
 )
 
