@@ -320,6 +320,7 @@ firmware() {
 iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
+    iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>/dev/null)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
@@ -338,6 +339,7 @@ autoipcon() {
 }
 
 manipcon() {
+    iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 	echo -e "Use this only if you know what you're doing or if there was an error with automatic static ip connection."
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
@@ -371,6 +373,7 @@ manipcon() {
 }
 
 wifi() {
+    iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
     rm -f /etc/resolv.conf
 	echo -e "This may take a while!!!"
 	mkdir -p /run/dbus
