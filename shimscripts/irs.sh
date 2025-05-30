@@ -417,10 +417,10 @@ EOF
     fi
 
 }
-updateshim() {
+updateshim() { #haha 420
     source /irs/shimscripts/updateshim.sh
 }
-packages() { #haha 420
+packages() {
     source /irs/shimscripts/packages.sh
 }
 options=(
