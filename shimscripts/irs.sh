@@ -4,6 +4,7 @@ canwifi() {
     "$@"
   else
     echo "Not connected to wifi."
+    sleep 2.5
   fi
 }
 menu() {
