@@ -66,7 +66,7 @@ credits() {
 	read -p "Press enter to continue."
 	clear
 	splash 1
-}
+} # haha 69
 
 
 recochoose=(/irs/recovery/*)
