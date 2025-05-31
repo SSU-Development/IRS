@@ -441,9 +441,9 @@ actions=(
     payloads
     wifi
     credits
-    "canwifi packages"
-    "canwifi packages && kvs || echo 'KVS not working or not present, running chromeos-tpm-recovery.' && chromeos-tpm-recovery || echo 'yeah you\'re fucked.'"
-    "updateshim"
+    "packages"
+    "packages && kvs || echo 'KVS not working or not present, running chromeos-tpm-recovery.' && chromeos-tpm-recovery || echo 'yeah you\'re fucked.'"
+    "canwifi updateshim"
     "reboot -f"
 )
 
