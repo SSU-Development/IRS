@@ -17,7 +17,7 @@ export COLOR_PINK_B="\x1b[1;38;2;235;170;238m"
 export COLOR_CYAN_B="\033[1;36m"
 
 funText() {
-	splashText=("    The lower tape fade meme is still massive" "     It probably existed in the first place." "                 now with kvs!")
+	splashText=("    The lower tape fade meme is still massive" "     It probably existed in the first place." "                 now with kvs!" "                 HACKED BY GEEN")
   	selectedSplashText=${splashText[$RANDOM % ${#splashText[@]}]}
 	echo -e " "
    	echo -e "$selectedSplashText"
