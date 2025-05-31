@@ -1,5 +1,11 @@
 #!/bin/bash
-alias canwifi="curl -Is https://github.com | head -n 1 | grep -q "HTTP/" && $1" || echo "Not connected to wifi."
+canwifi() {
+  if curl -Is https://github.com | head -n 1 | grep -q "HTTP/"; then
+    "$@"
+  else
+    echo "Not connected to wifi."
+  fi
+}
 menu() {
     local prompt="$1"
     shift
