@@ -448,7 +448,6 @@ actions=(
 )
 
 while true; do
-    alias canwifi="curl -Is https://github.com | head -n 1 | grep -q "HTTP/" && $1" || echo "Not connected to wifi."
     clear
     splash 0
     menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options[@]}"
