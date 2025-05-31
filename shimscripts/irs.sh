@@ -1,5 +1,5 @@
 #!/bin/bash
-alias canwifi="curl -Is https://github.com | head -n 1 | grep -q "HTTP/" && $1" || echo "Not connected to wifi." && return
+alias canwifi="curl -Is https://github.com | head -n 1 | grep -q "HTTP/" && $1" || echo "Not connected to wifi."
 menu() {
     local prompt="$1"
     shift
@@ -231,7 +231,7 @@ installcros() { #credits to xmb9 for part of this
 	install_choice=$?
 
 	case "$install_choice" in
-	    0) canwifi download ;;
+	    0) download ;;
 	    1) ;;
 	    *) reco="exit" ;;
 	esac
@@ -441,9 +441,9 @@ actions=(
     payloads
     wifi
     credits
-    "packages"
-    "packages && kvs || echo 'KVS not working or not present, running chromeos-tpm-recovery.' && chromeos-tpm-recovery || echo 'yeah you\'re fucked.'"
-    "canwifi updateshim"
+    "canwifi packages"
+    "canwifi packages && kvs"
+    "updateshim"
     "reboot -f"
 )
 
