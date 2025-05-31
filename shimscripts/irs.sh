@@ -237,7 +237,7 @@ installcros() { #credits to xmb9 for part of this
 	install_choice=$?
 
 	case "$install_choice" in
-	    0) download ;;
+	    0) canwifi download ;;
 	    1) ;;
 	    *) reco="exit" ;;
 	esac
@@ -447,9 +447,9 @@ actions=(
     payloads
     wifi
     credits
-    "canwifi packages"
-    "canwifi packages && kvs"
-    "updateshim"
+    packages
+    "packages && kvs || echo 'KVS not working or not present, running chromeos-tpm-recovery.' && chromeos-tpm-recovery || echo 'yeah you\'re fucked.'"
+    "canwifi updateshim"
     "reboot -f"
 )
 
