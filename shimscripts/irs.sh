@@ -417,9 +417,9 @@ EOF
     		n | N) changedhcpinfo ;;
     		    *) ;;
 	    esac
+} #haha 420
 
-}
-updateshim() { #haha 420
+updateshim() {
     source /irs/shimscripts/updateshim.sh
 }
 options=(
