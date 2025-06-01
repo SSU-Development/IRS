@@ -184,24 +184,26 @@ export_args() {
 export_args $(cat /proc/cmdline | sed -e 's/"[^"]*"/DROPPED/g') 1> /dev/null
 
 copy_lsb() {
-  echo "Copying lsb..."
+    echo "Copying lsb..."
 
-  local lsb_file="dev_image/etc/lsb-factory"
-  local src_path="/stateful/${lsb_file}"
-  local dest_path="/newroot/mnt/stateful_partition/${lsb_file}"
+    local lsb_file="dev_image/etc/lsb-factory"
+    local src_path="${STATEFUL_MNT}/${lsb_file}"
+    local dest_path="/newroot/etc/lsb-factory"
 
-  mkdir -p "/newroot/mnt/stateful_partition/dev_image/etc"
+    mkdir -p "$(dirname "${dest_path}")"
 
-  if [ -f "${src_path}" ]; then
-    echo "Found ${src_path}"
-    cp -a "${src_path}" "${dest_path}" || echo "failed with $?"
-    echo "REAL_USB_DEV=${loop}p3" >> "${dest_path}"
-    echo "KERN_ARG_KERN_GUID=$(echo "${KERN_ARG_KERN_GUID}" | tr '[:lower:]' '[:upper:]')" >> "${dest_path}"
-  else
-    echo "Missing ${src_path}!"
-    return 1
-  fi
+    if [ -f "${src_path}" ]; then
+        echo "Found ${src_path}"
+        cp "${src_path}" "${dest_path}" || fail "failed with $?"
+        echo "REAL_USB_DEV=${loop}p3" >> "${dest_path}"
+        echo "KERN_ARG_KERN_GUID=$(echo "${KERN_ARG_KERN_GUID}" | tr '[:lower:]' '[:upper:]')" >> "${dest_path}"
+        echo "Copied lsb-factory to ${dest_path}"
+    else
+        echo "Missing ${src_path}!"
+        return 1
+    fi
 }
+
 
 pv_dircopy() {
 	[ -d "$1" ] || return 1
