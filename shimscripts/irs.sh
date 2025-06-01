@@ -381,6 +381,8 @@ manipcon() {
 
 wifi() {
     rm -f /etc/resolv.conf
+    sync
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf 
 	echo -e "This may take a while!!!"
 	mkdir -p /run/dbus
 	dbus-daemon --system > /dev/null 2>&1
@@ -389,7 +391,7 @@ wifi() {
     read -p "Enter your wifi SSID/Name: " ssid
     read -p "Enter your wifi password (leave blank if none): " psk
     iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
-    ifconfig $iface up
+    ifconfig $iface up || echo "Wifi failed. If you're on grunt, that's why. Otherwise, try rebooting." && sleep 2.5 && return
     if [ -z "$psk" ]; then
         wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(
             cat <<EOF
@@ -402,8 +404,7 @@ EOF
         else
             wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
         fi
-        if ip link show "$iface" | grep -q "state UP"; then
-            	read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
+        read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
     	case "$autoip" in
     		y | Y) autoipcon ;;
     		n | N) manipcon ;;
@@ -412,16 +413,10 @@ EOF
     	case "$confirmchanges" in
     		y | Y) 
     			ifconfig $iface "$ip" netmask "$mask" up
-    		    route add default gw "$gateway"
-    		    echo "nameserver 8.8.8.8" > /etc/resolv.conf ;;
+    		    route add default gw "$gateway" ;;
     		n | N) changedhcpinfo ;;
     		    *) ;;
 	    esac
-    else
-        echo "Wifi failed. If you're on grunt, that's why. Otherwise, try rebooting."
-        sleep 1
-        return
-    fi
 
 }
 updateshim() { #haha 420
