@@ -14,7 +14,7 @@ Uses wifi (Yes, it works!!!) or Ethernet.
 * ✅ Recover with those recovery images, or images put in the device by another device.
 
 > [!WARNING]
-> Wifi on some grunt boards is broken. One of them is, in fact, barla. Fuck you, barla. If anyone has a solution for this, please tell us in [SSU's discord server](https://discord.gg/aB8fJZw86r).<br>
+> Wifi on some grunt boards is broken. One of them is, in fact, barla. Fuck you, barla. If anyone has a solution for this, please open an issue <br>
 # Prebuilts
 no.
 
