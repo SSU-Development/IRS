@@ -183,28 +183,24 @@ export_args() {
 
 export_args $(cat /proc/cmdline | sed -e 's/"[^"]*"/DROPPED/g') 1> /dev/null
 
-copy_lsb() { #credits to xmb9
+copy_lsb() {
   echo "Copying lsb..."
 
   local lsb_file="dev_image/etc/lsb-factory"
-  local dest_path="${NEWROOT_MNT}/mnt/stateful_partition/${lsb_file}"
-  local src_path="${STATEFUL_MNT}/${lsb_file}"
+  local src_path="/stateful/${lsb_file}"
+  local dest_path="/newroot/mnt/stateful_partition/${lsb_file}"
 
   mkdir -p "$(dirname "${dest_path}")"
 
-  local ret=0
   if [ -f "${src_path}" ]; then
-    # Convert kern_guid to uppercase and store extra info
-    local kern_guid=$(echo "${KERN_ARG_KERN_GUID}" | tr '[:lower:]' '[:upper:]')
     echo "Found ${src_path}"
     cp -a "${src_path}" "${dest_path}"
-    echo "REAL_USB_DEV=${loop}p3" >>"${dest_path}"
-    echo "KERN_ARG_KERN_GUID=${kern_guid}" >>"${dest_path}"
+    echo "REAL_USB_DEV=${loop}p3" >> "${dest_path}"
+    echo "KERN_ARG_KERN_GUID=$(echo "${KERN_ARG_KERN_GUID}" | tr '[:lower:]' '[:upper:]')" >> "${dest_path}"
   else
-    echo "Failed to find ${src_path}!!"
-    ret=1
+    echo "Missing ${src_path}!"
+    return 1
   fi
-  return "${ret}"
 }
 
 pv_dircopy() {
@@ -220,12 +216,20 @@ downloadshim() {
 	
 }
 
-download() {
+downloadcros() {
 	versions
 	cd /irs/recovery/
     curl --progress-bar -k "$FINAL_URL" -o $VERSION.zip
 	unzip $VERSION.zip
 	rm $VERSION.zip
+    cd /
+}
+downloadshims() {
+	cd /irs/shims/
+    curl --progress-bar -k "$FINAL_URL" -o $NAME.zip
+	unzip $NAME.zip
+	rm $NAME.zip
+    cd /
 }
 installcros() { #credits to xmb9 for part of this
 	options_install=(
@@ -297,7 +301,70 @@ installcros() { #credits to xmb9 for part of this
 		echo -e "\n${COLOR_RED_B}Reboot failed. Hanging..."
 	fi
 }
+shimboot() {
+    if [[ -z "$(ls -A /irs/shims 2>/dev/null)" ]]; then
+        echo -e "${COLOR_YELLOW_B}You have no shims downloaded!"
+        shim="Exit"
+    else
+        shim_options=("${shimchoose[@]}" "Exit")
+            menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${shim_options[@]}"
+        choice=$?
+        shim="${shim_options[$choice]}"
+    fi
 
+    if [[ $shim == "Exit" ]]; then
+        read -p "Press enter to continue."
+        clear
+        splash
+        return
+    fi
+
+    mkdir -p "$shimroot"
+    loop=$(losetup -fP --show "$shim") || fail "Failed to set up loop device."
+    export loop
+
+    loop_root=$(cgpt find -l ROOT-A "$loop" 2>/dev/null || cgpt find -t rootfs "$loop" | head -n 1)
+    [[ -z "$loop_root" ]] && fail "ROOT-A not found."
+    mount "$loop_root" "$shimroot" || fail "Failed to mount ROOT-A."
+
+    if ! stateful=$(cgpt find -l STATE "$loop" 2>/dev/null | grep -m1 /dev/); then
+        if ! stateful=$(cgpt find -l SH1MMER "$loop" 2>/dev/null | grep -m1 /dev/); then
+            for dev in "$loop"*; do
+                [[ -b "$dev" ]] || continue
+                parttype=$(udevadm info --query=property --name="$dev" 2>/dev/null | grep '^ID_PART_ENTRY_TYPE=' | cut -d= -f2)
+                [[ "$parttype" == "0fc63daf-8483-4772-8e79-3d69d8477de4" ]] && stateful="$dev" && break
+            done
+        fi
+    fi
+
+    [[ -z "${stateful// }" ]] && fail "Could not find stateful partition."
+
+    mkdir -p /stateful /newroot
+    mount -t tmpfs tmpfs /newroot -o size=1024M || fail "TMPFS mount failed."
+    mount -o ro "$stateful" /stateful || fail "Mounting stateful failed."
+
+    copy_lsb
+    pv_dircopy "$shimroot" /newroot || fail "Rootfs copy failed."
+
+    for d in dev proc sys tmp run; do mkdir -p "/newroot/$d"; done
+    mount -t tmpfs -o mode=1777 none /newroot/tmp
+    mount -t tmpfs -o mode=0555 run /newroot/run
+    mkdir -p -m 0755 /newroot/run/lock
+
+    umount -lf /dev/pts 2>/dev/null
+
+    for mnt in /dev /proc /sys; do
+        mount --move "$mnt" "/newroot$mnt" || true
+    done
+
+    mkdir -p /newroot/tmp/irs
+    pivot_root /newroot /newroot/tmp/irs || fail "pivot_root failed."
+    exec /sbin/init || {
+        echo "Init failed. Dropping to shell. This is PID 1."
+        /tmp/irs/bin/uname -a
+        exec /tmp/irs/bin/sh
+    }
+}
 payloads() {
 	options_payload=("${selpayload[@]}" "Exit")
 
@@ -429,6 +496,7 @@ options=(
     "Connect to wifi"
     "Credits"
     "KVS"
+    "Boot a shim"
     "Update the IRS Shim"
     "Exit and Reboot"
 )
@@ -440,6 +508,7 @@ actions=(
     wifi
     credits
     "kvs || chromeos-tpm-recovery"
+    "shimboot"
     "canwifi updateshim"
     "reboot -f"
 )
