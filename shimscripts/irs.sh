@@ -190,11 +190,11 @@ copy_lsb() {
   local src_path="/stateful/${lsb_file}"
   local dest_path="/newroot/mnt/stateful_partition/${lsb_file}"
 
-  mkdir -p "$(dirname "${dest_path}")"
+  mkdir -p "/newroot/mnt/stateful_partition/dev_image/etc"
 
   if [ -f "${src_path}" ]; then
     echo "Found ${src_path}"
-    cp -a "${src_path}" "${dest_path}"
+    cp -a "${src_path}" "${dest_path}" || echo "failed with $?"
     echo "REAL_USB_DEV=${loop}p3" >> "${dest_path}"
     echo "KERN_ARG_KERN_GUID=$(echo "${KERN_ARG_KERN_GUID}" | tr '[:lower:]' '[:upper:]')" >> "${dest_path}"
   else
