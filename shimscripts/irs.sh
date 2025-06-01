@@ -327,7 +327,7 @@ firmware() {
 iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
-    iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
+    iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>/dev/null)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
@@ -340,13 +340,13 @@ autoipcon() {
     echo "IP: $ip"
     echo "Gateway: $gateway"
     echo "Subnet Mask: $mask"
-    ifconfig $iface "$ip" netmask "$mask" up
+    ifconfig ${iface} "$ip" netmask "$mask" up
     route add default gw "$gateway"
 	read -p "Confirm? (Y/n)" confirmchanges 
 }
 
 manipcon() {
-    iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
+    iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
 	echo -e "Use this only if you know what you're doing or if there was an error with automatic static ip connection."
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
@@ -380,7 +380,6 @@ manipcon() {
 }
 
 wifi() {
-    iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
     rm -f /etc/resolv.conf
 	echo -e "This may take a while!!!"
 	mkdir -p /run/dbus
@@ -389,6 +388,7 @@ wifi() {
 	firmware
     read -p "Enter your wifi SSID/Name: " ssid
     read -p "Enter your wifi password (leave blank if none): " psk
+    iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
     ifconfig $iface up
     if [ -z "$psk" ]; then
         wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(
