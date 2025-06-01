@@ -25,7 +25,7 @@ no.
 - Synaptic: Emotional Support
 - Simon: Brainstormed how to do wifi, helped with dhcpcd
 - kraeb: QoL improvements and initial idea
-- xmb9: The name, the current builder
+- xmb9: The name, builder, and part of shim booting
 - AC3: Literally nothing
 - Rainestorme: Murkmod's version finder
 
