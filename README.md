@@ -2,13 +2,15 @@
 
 those who recover
 
+# Building
+Run on a SH1MMER shim
 ```bash
 sudo bash irs_builder.sh board.bin
 ```
 
+# What can it do?
 Uses wifi (Yes, it works!!!) or Ethernet.
 
-# What can it do?
 * ✅ Connect to wifi
 * ✅ Download recovery images
 * ✅ Recover with those recovery images, or images put in the device by another device.
