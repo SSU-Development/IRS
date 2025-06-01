@@ -4,7 +4,7 @@ canwifi() {
     "$@"
   else
     echo "Not connected to wifi."
-    sleep 2.5
+    sleep 2
   fi
 }
 menu() {
@@ -391,7 +391,7 @@ wifi() {
     read -p "Enter your wifi SSID/Name: " ssid
     read -p "Enter your wifi password (leave blank if none): " psk
     iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
-    ifconfig $iface up || echo "Wifi failed. If you're on grunt, that's why. Otherwise, try rebooting." && sleep 2.5 && return
+    ifconfig $iface up || return
     if [ -z "$psk" ]; then
         wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(
             cat <<EOF
