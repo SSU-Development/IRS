@@ -301,7 +301,7 @@ installcros() { #credits to xmb9 for part of this
 		echo -e "\n${COLOR_RED_B}Reboot failed. Hanging..."
 	fi
 }
-shimboot() {
+shimboot() { # credits to xmb9 for some of this
     if [[ -z "$(ls -A /irs/shims 2>/dev/null)" ]]; then
         echo -e "${COLOR_YELLOW_B}You have no shims downloaded!"
         shim="Exit"
