@@ -402,7 +402,7 @@ EOF
         else
             wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
         fi
-        if ip addr | awk '/^[0-9]+: / { iface=$2 } /state UP/ && iface ~ /^w/ { exit 0 } END { exit 1 }'; then
+        if ip link show "$iface" | grep -q "state UP"; then
             	read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
     	case "$autoip" in
     		y | Y) autoipcon ;;
