@@ -422,9 +422,6 @@ EOF
 updateshim() { #haha 420
     source /irs/shimscripts/updateshim.sh
 }
-packages() {
-    source /irs/shimscripts/packages.sh
-}
 options=(
     "Bash shell"
     "Install a ChromeOS recovery image"
@@ -432,7 +429,6 @@ options=(
     "Connect to wifi"
     "Credits"
     "KVS"
-    "Install additional packages"
     "Update the IRS Shim"
     "Exit and Reboot"
 )
@@ -443,8 +439,7 @@ actions=(
     payloads
     wifi
     credits
-    packages
-    "packages && kvs || echo 'KVS not working or not present, running chromeos-tpm-recovery.' && chromeos-tpm-recovery || echo 'yeah you\'re fucked.'"
+    "kvs || echo 'KVS not working or not present, running chromeos-tpm-recovery.' && chromeos-tpm-recovery || echo 'yeah you\'re fucked.'"
     "canwifi updateshim"
     "reboot -f"
 )
