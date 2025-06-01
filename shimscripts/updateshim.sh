@@ -29,3 +29,4 @@ cp -r "$update/IRS-main/payloads/"* "$payloads/"
 cp -r "$update/IRS-main/binaries/"* "$binaries/"
 cp "$update/IRS-main/shimscripts/startirs.sh" "/usr/sbin/sh1mmer_main.sh"
 echo "Update complete."
+sync
