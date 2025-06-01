@@ -361,14 +361,14 @@ shimboot() { # credits to xmb9 for some of this
 
     mkdir -p /newroot/tmp/irs
     pivot_root /newroot /newroot/tmp/irs || fail "pivot_root failed."
+    if [ -f "/bin/kvs" ]; then
+        exec /bin/kvs
+    fi
     exec /sbin/init || {
         echo "Init failed. Dropping to shell. This is PID 1."
         /tmp/irs/bin/uname -a
         exec /tmp/irs/bin/sh
     }
-    if [ -f "/bin/kvs" ]; then
-        kvs
-    fi # this is a temporary solution until i figure out the root cause of this
 }
 payloads() {
 	options_payload=("${selpayload[@]}" "Exit")
