@@ -400,7 +400,7 @@ iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
     iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
-    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>/dev/null)
+    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
     firstnum=$(echo "$ip" | cut -d. -f1)
@@ -423,7 +423,7 @@ manipcon() {
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
 
-    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>/dev/null)
+    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
     firstnum=$(echo "$ip" | cut -d. -f1)
