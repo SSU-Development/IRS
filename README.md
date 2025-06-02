@@ -26,7 +26,7 @@ no.
 # Credits
 - Sophia: The lead developer of IRS, Figured out wifi
 - Synaptic: Emotional Support
-- Simon: Brainstormed how to do wifi, helped with dhcpcd
+- Simon: Brainstormed how to do wifi, helped with determining wireless interface
 - kraeb: QoL improvements and initial idea
 - xmb9: The name, builder, and part of shim booting
 - AC3: Literally nothing
