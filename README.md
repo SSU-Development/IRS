@@ -1,5 +1,7 @@
 # The IRS (The ~~Internal Revenue Service~~ Internet Recovery Shim)
 
+v1.1.1
+
 those who recover
 
 # Building
@@ -14,6 +16,7 @@ Uses wifi (Yes, it works!!!) or Ethernet.
 * ✅ Connect to wifi
 * ✅ Download recovery images
 * ✅ Recover with those recovery images, or images put in the device by another device.
+* ✅ Boot shims
 
 > [!WARNING]
 > Wifi on some grunt boards is broken. One of them is, in fact, barla. Fuck you, barla. If anyone has a solution for this, please open an issue <br>
