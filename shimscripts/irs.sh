@@ -244,7 +244,7 @@ installcros() { #credits to xmb9 for part of this
 	install_choice=$?
 
 	case "$install_choice" in
-	    0) canwifi download ;;
+	    0) canwifi downloadcros ;;
 	    1) ;;
 	    *) reco="exit" ;;
 	esac
@@ -422,7 +422,6 @@ manipcon() {
 	echo -e "Use this only if you know what you're doing or if there was an error with automatic static ip connection."
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
-
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
     ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
     gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
@@ -476,6 +475,7 @@ EOF
         else
             wpa_supplicant -i $iface -C /run/wpa_supplicant -B -c <(wpa_passphrase "$ssid" "$psk")
         fi
+        dhcpcd >/dev/null
         read -p "Would you like to automatically configure the static ip to connect to the wifi with? (Y/n): " autoip
     	case "$autoip" in
     		y | Y) autoipcon ;;
