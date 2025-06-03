@@ -106,14 +106,19 @@ versions() {
     local board_name=${release_board%%-*}
 	export board_name
     echo "What version of ChromeOS do you want to download?"
-    echo " 1) Latest version"
-    echo " 2) Custom version"
-    read -p "(1-2) > " choice
-    case $choice in
-        1) VERSION="latest" ;;
-        2) read -p "Enter version: " VERSION ;;
+	options_install=(
+	    "Latest Version"
+	    "Custom Version"
+	)
+
+	menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options_install[@]}"
+	install_choice=$?
+
+	case "$install_choice" in
+	    0) VERSION="latest" ;;
+	    1) read -p "Enter version: " VERSION ;;
         *) echo "Invalid choice, exiting." && exit ;;
-    esac
+	esac
     echo "Fetching recovery image..."
     if [ $VERSION == "latest" ]; then
         export builds=$(curl -ks https://chromiumdash.appspot.com/cros/fetch_serving_builds?deviceCategory=Chrome%20OS)
