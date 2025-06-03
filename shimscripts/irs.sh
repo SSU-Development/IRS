@@ -328,7 +328,7 @@ shimboot() { # credits to xmb9 for some of this
         *) return ;;
     esac
 
-    if [[ -z "$(ls -A /irs/recovery)" ]]; then
+    if [[ -z "$(ls -A /irs/shims)" ]]; then
         echo -e "${COLOR_YELLOW_B}You have no recovery images downloaded!\nPlease download a few images for your board (${board_name})."
         echo -e "Alternatively, these are available on websites such as chrome100.dev, or cros.tech. Put them into the recovery folder on IRS_FILES."
         reco="exit"
@@ -393,6 +393,9 @@ shimboot() { # credits to xmb9 for some of this
         if [ -f "/bin/kvs" ]; then
             exec /bin/kvs
         fi
+	if [ -f "/irs/shimscripts/irs.sh" ]; then
+ 	    cp /tmp/irs/shims/* /irs/shims/
+	fi # mwah hah hahhhhhhh
         exec /sbin/init || {
             echo "Init failed. Dropping to shell. This is PID 1."
             /tmp/irs/bin/uname -a
