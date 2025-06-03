@@ -7,7 +7,11 @@ those who recover
 # Building
 Run on a SH1MMER shim
 ```bash
-sudo bash irs_builder.sh board.bin
+git clone https://github.com/SSU-Development/IRS.git
+```
+Copy a Legacy SH1MMER shim into the cloned repo
+```bash
+sudo bash irs_builder.sh sh1mmer_board.bin
 ```
 
 # What can it do?
