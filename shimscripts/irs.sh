@@ -302,7 +302,7 @@ installcros() { #credits to xmb9 for part of this
 	  		mount -n --bind "${d}" "./${d}"
 	  		mount --make-slave "./${d}"
 		done
-		chroot ./ /usr/sbin/chromeos-install --payload_image= "${loop}" --yes || fail "Failed during chroot!"
+		chroot ./ /usr/sbin/chromeos-install --payload_image="${loop}" --yes || fail "Failed during chroot!"
 		cgpt add -i 2 $cros_dev -P 15 -T 15 -S 1 -R 1 || echo -e "${COLOR_YELLOW_B}Failed to set kernel priority! Continuing anyway.${COLOR_RESET}"
 		echo -e "${COLOR_GREEN}\n"
 		read -p "Recovery finished. Press any key to reboot."
