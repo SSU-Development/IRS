@@ -1,6 +1,55 @@
 #!/bin/bash
 
 # IRS' backup and update system.
+menu() {
+    local prompt="$1"
+    shift
+    local options=("$@")
+    local selected=0
+    local count=${#options[@]}
+
+    tput civis
+    echo "$prompt"
+    for i in "${!options[@]}"; do
+        if [[ $i -eq $selected ]]; then
+            tput smul
+            echo " > ${options[i]}"
+            tput rmul
+        else
+            echo "   ${options[i]}"
+        fi
+    done
+
+    while true; do
+        tput cuu $count
+        for i in "${!options[@]}"; do
+            if [[ $i -eq $selected ]]; then
+                tput smul
+                echo " > ${options[i]}"
+                tput rmul
+            else
+                echo "   ${options[i]}"
+            fi
+        done
+
+        IFS= read -rsn1 key
+        if [[ $key == $'\x1b' ]]; then
+            read -rsn2 key
+        fi
+
+        case $key in
+            '[A') ((selected--)) ;;
+            '[B') ((selected++)) ;;
+            '') break ;;
+        esac
+
+        ((selected < 0)) && selected=$((count - 1))
+        ((selected >= count)) && selected=0
+    done
+
+    tput cnorm
+    return $selected
+}
 shimupdate() {
 export update="/irs/update"
 export scripts="/irs/shimscripts"
