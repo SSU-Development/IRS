@@ -86,8 +86,8 @@ driveupdate() {
         n|N) echo "Please run on linux or cros devmode shell." && sleep 2 && return ;;
         *) ;;
     esac
-    mkdir -p ~/IRSMOUNT
     export DRIVE='~/IRSMOUNT'
+    mkdir -p $DRIVE
     mount /dev/disk/by-label/IRS_FILES $DRIVE # more like /dev/disk/by-label/xmb9 amiright
     export update="$DRIVE/update"
     export scripts="$DRIVE/shimscripts"
