@@ -233,6 +233,7 @@ downloadcros() {
 }
 downloadshims() {
 	cd /irs/shims/
+    curl 
     curl --progress-bar -k "$FINAL_URL" -o $NAME.zip
 	unzip $NAME.zip
 	rm $NAME.zip
@@ -309,6 +310,26 @@ installcros() { #credits to xmb9 for part of this
 	fi
 }
 shimboot() { # credits to xmb9 for some of this
+	options_install=(
+	    "Download a shim off the interwebs to the flash drive and boot"
+	    "Use a shim already in the shims directory"
+	    "Exit and return to The IRS Menu"
+	)
+
+	menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options_install[@]}"
+	install_choice=$?
+
+	case "$install_choice" in
+	    0) canwifi downloadshims ;;
+	    1) ;;
+	    *) return ;;
+	esac
+
+	if [[ -z "$(ls -A /irs/recovery)" ]]; then
+		echo -e "${COLOR_YELLOW_B}You have no recovery images downloaded!\nPlease download a few images for your board (${board_name})."
+		echo -e "Alternatively, these are available on websites such as chrome100.dev, or cros.tech. Put them into the recovery folder on IRS_FILES."
+		reco="exit"
+	else
     if [[ -z "$(ls -A /irs/shims 2>/dev/null)" ]]; then
         echo -e "${COLOR_YELLOW_B}You have no shims downloaded!"
         shim="Exit"
