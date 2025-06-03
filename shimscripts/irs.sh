@@ -313,92 +313,94 @@ installcros() { #credits to xmb9 for part of this
 	fi
 }
 shimboot() { # credits to xmb9 for some of this
-	options_install=(
-	    "Download a shim off the interwebs to the flash drive and boot"
-	    "Use a shim already in the shims directory"
-	    "Exit and return to The IRS Menu"
-	)
+    options_install=(
+        "Download a shim off the interwebs to the flash drive and boot"
+        "Use a shim already in the shims directory"
+        "Exit and return to The IRS Menu"
+    )
 
-	menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options_install[@]}"
-	install_choice=$?
+    menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${options_install[@]}"
+    install_choice=$?
 
-	case "$install_choice" in
-	    0) canwifi downloadshims ;;
-	    1) ;;
-	    *) return ;;
-	esac
+    case "$install_choice" in
+        0) canwifi downloadshims ;;
+        1) ;;
+        *) return ;;
+    esac
 
-	if [[ -z "$(ls -A /irs/recovery)" ]]; then
-		echo -e "${COLOR_YELLOW_B}You have no recovery images downloaded!\nPlease download a few images for your board (${board_name})."
-		echo -e "Alternatively, these are available on websites such as chrome100.dev, or cros.tech. Put them into the recovery folder on IRS_FILES."
-		reco="exit"
-	else
-    if [[ -z "$(ls -A /irs/shims 2>/dev/null)" ]]; then
-        echo -e "${COLOR_YELLOW_B}You have no shims downloaded!"
-        shim="Exit"
+    if [[ -z "$(ls -A /irs/recovery)" ]]; then
+        echo -e "${COLOR_YELLOW_B}You have no recovery images downloaded!\nPlease download a few images for your board (${board_name})."
+        echo -e "Alternatively, these are available on websites such as chrome100.dev, or cros.tech. Put them into the recovery folder on IRS_FILES."
+        reco="exit"
     else
-        shim_options=("${shimchoose[@]}" "Exit")
+        if [[ -z "$(ls -A /irs/shims 2>/dev/null)" ]]; then
+            echo -e "${COLOR_YELLOW_B}You have no shims downloaded!"
+            shim="Exit"
+        else
+            shim_options=("${shimchoose[@]}" "Exit")
             menu "Select an option (use ↑ ↓ arrows, Enter to select):" "${shim_options[@]}"
-        choice=$?
-        shim="${shim_options[$choice]}"
-    fi
-
-    if [[ $shim == "Exit" ]]; then
-        read -p "Press enter to continue."
-        clear
-        splash
-        return
-    fi
-
-    mkdir -p "$shimroot"
-    loop=$(losetup -fP --show "$shim") || fail "Failed to set up loop device."
-    export loop
-
-    loop_root=$(cgpt find -l ROOT-A "$loop" 2>/dev/null || cgpt find -t rootfs "$loop" | head -n 1)
-    [[ -z "$loop_root" ]] && fail "ROOT-A not found."
-    mount "$loop_root" "$shimroot" || fail "Failed to mount ROOT-A."
-
-    if ! stateful=$(cgpt find -l STATE "$loop" 2>/dev/null | grep -m1 /dev/); then
-        if ! stateful=$(cgpt find -l SH1MMER "$loop" 2>/dev/null | grep -m1 /dev/); then
-            for dev in "$loop"*; do
-                [[ -b "$dev" ]] || continue
-                parttype=$(udevadm info --query=property --name="$dev" 2>/dev/null | grep '^ID_PART_ENTRY_TYPE=' | cut -d= -f2)
-                [[ "$parttype" == "0fc63daf-8483-4772-8e79-3d69d8477de4" ]] && stateful="$dev" && break
-            done
+            choice=$?
+            shim="${shim_options[$choice]}"
         fi
+
+        if [[ $shim == "Exit" ]]; then
+            read -p "Press enter to continue."
+            clear
+            splash
+            return
+        fi
+
+        mkdir -p "$shimroot"
+        loop=$(losetup -fP --show "$shim") || fail "Failed to set up loop device."
+        export loop
+
+        loop_root=$(cgpt find -l ROOT-A "$loop" 2>/dev/null || cgpt find -t rootfs "$loop" | head -n 1)
+        [[ -z "$loop_root" ]] && fail "ROOT-A not found."
+        mount "$loop_root" "$shimroot" || fail "Failed to mount ROOT-A."
+
+        if ! stateful=$(cgpt find -l STATE "$loop" 2>/dev/null | grep -m1 /dev/); then
+            if ! stateful=$(cgpt find -l SH1MMER "$loop" 2>/dev/null | grep -m1 /dev/); then
+                for dev in "$loop"*; do
+                    [[ -b "$dev" ]] || continue
+                    parttype=$(udevadm info --query=property --name="$dev" 2>/dev/null | grep '^ID_PART_ENTRY_TYPE=' | cut -d= -f2)
+                    [[ "$parttype" == "0fc63daf-8483-4772-8e79-3d69d8477de4" ]] && stateful="$dev" && break
+                done
+            fi
+        fi
+
+        [[ -z "${stateful// }" ]] && fail "Could not find stateful partition."
+
+        mkdir -p /stateful /newroot
+        mount -t tmpfs tmpfs /newroot -o size=1024M || fail "TMPFS mount failed."
+        mount -o ro "$stateful" /stateful || fail "Mounting stateful failed."
+
+        copy_lsb
+        pv_dircopy "$shimroot" /newroot || fail "Rootfs copy failed."
+
+        for d in dev proc sys tmp run; do mkdir -p "/newroot/$d"; done
+        mount -t tmpfs -o mode=1777 none /newroot/tmp
+        mount -t tmpfs -o mode=0555 run /newroot/run
+        mkdir -p -m 0755 /newroot/run/lock
+
+        umount -lf /dev/pts 2>/dev/null
+
+        for mnt in /dev /proc /sys; do
+            mount --move "$mnt" "/newroot$mnt" || true
+        done
+
+        mkdir -p /newroot/tmp/irs
+        pivot_root /newroot /newroot/tmp/irs || fail "pivot_root failed."
+        if [ -f "/bin/kvs" ]; then
+            exec /bin/kvs
+        fi
+        exec /sbin/init || {
+            echo "Init failed. Dropping to shell. This is PID 1."
+            /tmp/irs/bin/uname -a
+            exec /tmp/irs/bin/sh
+        }
     fi
-
-    [[ -z "${stateful// }" ]] && fail "Could not find stateful partition."
-
-    mkdir -p /stateful /newroot
-    mount -t tmpfs tmpfs /newroot -o size=1024M || fail "TMPFS mount failed."
-    mount -o ro "$stateful" /stateful || fail "Mounting stateful failed."
-
-    copy_lsb
-    pv_dircopy "$shimroot" /newroot || fail "Rootfs copy failed."
-
-    for d in dev proc sys tmp run; do mkdir -p "/newroot/$d"; done
-    mount -t tmpfs -o mode=1777 none /newroot/tmp
-    mount -t tmpfs -o mode=0555 run /newroot/run
-    mkdir -p -m 0755 /newroot/run/lock
-
-    umount -lf /dev/pts 2>/dev/null
-
-    for mnt in /dev /proc /sys; do
-        mount --move "$mnt" "/newroot$mnt" || true
-    done
-
-    mkdir -p /newroot/tmp/irs
-    pivot_root /newroot /newroot/tmp/irs || fail "pivot_root failed."
-    if [ -f "/bin/kvs" ]; then
-        exec /bin/kvs
-    fi
-    exec /sbin/init || {
-        echo "Init failed. Dropping to shell. This is PID 1."
-        /tmp/irs/bin/uname -a
-        exec /tmp/irs/bin/sh
-    }
 }
+
 payloads() {
 	options_payload=("${selpayload[@]}" "Exit")
 
