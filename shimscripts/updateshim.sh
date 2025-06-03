@@ -81,9 +81,9 @@ export binaries="/irs/binaries"
 }
 
 driveupdate() {
-    read -p "Are you on linux/cros? Not crostini, instructions for that in the repo. (Y/n)" linux
+    read -p "Are you on linux? Not crostini, Not Cros, instructions for those in the repo. (Y/n)" linux
     case $linux in 
-        n|N) echo "Please run on linux or cros devmode shell." && sleep 2 && return ;;
+        n|N) echo "Please run on linux." && sleep 2 && return ;;
         *) ;;
     esac
     export DRIVE='~/IRSMOUNT'
