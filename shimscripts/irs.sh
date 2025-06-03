@@ -406,8 +406,12 @@ iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 autoipcon() {
     iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
-    ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
-    gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
+    ip=$(echo "$DHCP_INFO" | grep -Eo 'acknowledged ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+    gateway=$(echo "$DHCP_INFO" | grep -Eo 'from ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+    if [ -z "$ip" ] || [ -z "$gateway" ]; then
+        echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
+        return 1
+    fi
     firstnum=$(echo "$ip" | cut -d. -f1)
     if [ "$firstnum" = "10" ]; then
         mask="255.0.0.0"
@@ -428,8 +432,12 @@ manipcon() {
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
-    ip=$(echo "$DHCP_INFO" | grep offered | awk '{print $3}')
-    gateway=$(echo "$DHCP_INFO" | grep offered | awk '{print $5}')
+    ip=$(echo "$DHCP_INFO" | grep -Eo 'acknowledged ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+    gateway=$(echo "$DHCP_INFO" | grep -Eo 'from ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+    if [ -z "$ip" ] || [ -z "$gateway" ]; then
+        echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
+        return 1
+    fi
     firstnum=$(echo "$ip" | cut -d. -f1)
     if [ "$firstnum" = "10" ]; then
         mask="255.0.0.0"
