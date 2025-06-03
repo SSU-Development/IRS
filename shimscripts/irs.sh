@@ -462,6 +462,9 @@ manipcon() {
 	read -p "Confirm by pressing Enter."
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
     ip=$(echo "$DHCP_INFO" | grep -Eo 'acknowledged ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+    if [ -z $ip ]; then
+    	ip=$(echo "$DHCP_INFO" | grep -Eo 'offered ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+    fi
     gateway=$(echo "$DHCP_INFO" | grep -Eo 'from ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
         echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
