@@ -69,7 +69,7 @@ export binaries="/irs/binaries"
     echo "Downloading IRS..."
     curl -L "$url" -o "$path" 2>/dev/null
     echo "Extracting..."
-    unzip -o "$path" -d "$update"
+    unzip -o "$path" -d "$update" 2>/dev/null
     mv "$scripts"/* "$backups/"
     mkdir -p "$scripts"
     cp -r "$update/IRS-main/shimscripts/"* "$scripts/"
