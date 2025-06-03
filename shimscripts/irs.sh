@@ -291,6 +291,9 @@ installcros() { #credits to xmb9 for part of this
 			fail "${err1}${err2}${err3}"
 		fi
 		local cros_dev="$(get_largest_cros_blockdev)"
+  		if [ -z "$cros_dev" ]; then
+			echo -e "${COLOR_YELLOW_B}No ChromeOS drive was found on the device! Please make sure ChromeOS is installed before using IRS. Continuing anyway...${COLOR_RESET}"
+		fi
 		stateful="$(cgpt find -l STATE ${loop} | head -n 1 | grep --color=never /dev/)" || fail "Failed to find stateful partition on ${loop}!"
 		mount $stateful /mnt/stateful_partition || fail "Failed to mount stateful partition!"
 		MOUNTS="/proc /dev /sys /tmp /run /var /mnt/stateful_partition"
@@ -300,8 +303,8 @@ installcros() { #credits to xmb9 for part of this
 	  		mount -n --bind "${d}" "./${d}"
 	  		mount --make-slave "./${d}"
 		done
-		chroot ./ /usr/sbin/chromeos-install --payload_image "${loop}" --use_payload_kern_b --yes || fail "Failed during chroot!"
-		cgpt add -i 2 $cros_dev -P 15 -T 15 -S 1 -R 1 || echo -e "${COLOR_YELLOW_B}Failed to set kernel priority! This most likely isn't an issue.${COLOR_RESET}"
+		chroot ./ /usr/sbin/chromeos-install --payload_image="${loop}" --yes || fail "Failed during chroot!"
+		cgpt add -i 2 $cros_dev -P 15 -T 15 -S 1 -R 1 || echo -e "${COLOR_YELLOW_B}Failed to set kernel priority! Continuing anyway.${COLOR_RESET}"
 		echo -e "${COLOR_GREEN}\n"
 		read -p "Recovery finished. Press any key to reboot."
 		reboot

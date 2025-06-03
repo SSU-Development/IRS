@@ -20,6 +20,7 @@ Uses wifi (Yes, it works!!!) or Ethernet.
 
 > [!WARNING]
 > Wifi on some grunt boards is broken. One of them is, in fact, barla. Fuck you, barla. If anyone has a solution for this, please open an issue <br>
+> <sub> edit: a solution is being worked on, all we need to do is compile the rtw88 kernel modules for the grunt shim kernel :3 - kxtz (eta wen? idk, probably irs 2) <sub>
 # Prebuilts
 no.
 
