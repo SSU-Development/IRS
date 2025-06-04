@@ -435,7 +435,7 @@ iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 
 autoipcon() {
     iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
-    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
+    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>&1)
     ip=$(echo "$DHCP_INFO" | grep -oE 'offered [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
     gateway=$(echo "$DHCP_INFO" | grep -oE 'offered .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
@@ -462,7 +462,7 @@ manipcon() {
 	echo -e "Use this only if you know what you're doing or if there was an error with automatic static ip connection."
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
-    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
+    DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface 2>&1)
     ip=$(echo "$DHCP_INFO" | grep -oE 'offered [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
     gateway=$(echo "$DHCP_INFO" | grep -oE 'offered .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
