@@ -443,8 +443,8 @@ autoipcon() {
     gateway=$(echo "$DHCP_INFO" | grep -Eo 'from ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
         echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
-	sleep 2
-        return 1
+  sleep 1
+        
     fi
     firstnum=$(echo "$ip" | cut -d. -f1)
     if [ "$firstnum" = "10" ]; then
@@ -473,8 +473,7 @@ manipcon() {
     gateway=$(echo "$DHCP_INFO" | grep -Eo 'from ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
         echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
-	sleep 2
-        return 1
+	sleep 1
     fi
     firstnum=$(echo "$ip" | cut -d. -f1)
     if [ "$firstnum" = "10" ]; then
