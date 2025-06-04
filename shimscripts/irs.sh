@@ -436,12 +436,8 @@ iface=$(ip a | grep "wl" | head -n 1 | awk '{print $2}' | sed 's/://')
 autoipcon() {
     iface=$(ip -o link show | awk -F': ' '/wl/ {print $2; exit}')
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
-    ip=$(echo "$DHCP_INFO" | grep -oE 'acknowledged [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
-    gateway=$(echo "$DHCP_INFO" | grep -oE 'acknowledged .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
-    if [ -z "$ip" ]; then
-        ip=$(echo "$DHCP_INFO" | grep -oE 'offered [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
-        gateway=$(echo "$DHCP_INFO" | grep -oE 'offered .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
-    fi
+    ip=$(echo "$DHCP_INFO" | grep -oE 'offered [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
+    gateway=$(echo "$DHCP_INFO" | grep -oE 'offered .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
         echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
   sleep 1
@@ -467,12 +463,8 @@ manipcon() {
 	echo -e "You can find this information on most any device connected to your wifi."
 	read -p "Confirm by pressing Enter."
     DHCP_INFO=$(dhcpcd -d -4 -G -K -T $iface)
-    ip=$(echo "$DHCP_INFO" | grep -oE 'acknowledged [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
-    gateway=$(echo "$DHCP_INFO" | grep -oE 'acknowledged .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
-    if [ -z "$ip" ]; then
-        ip=$(echo "$DHCP_INFO" | grep -oE 'offered [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
-        gateway=$(echo "$DHCP_INFO" | grep -oE 'offered .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
-    fi
+    ip=$(echo "$DHCP_INFO" | grep -oE 'offered [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}')
+    gateway=$(echo "$DHCP_INFO" | grep -oE 'offered .* from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $NF}')
     if [ -z "$ip" ] || [ -z "$gateway" ]; then
         echo "Failed to get ip/gateway. Please report this bug in IRS's issues."
 	sleep 1
